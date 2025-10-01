@@ -33,17 +33,19 @@ const PowersSection = () => {
   // Estados para o modal de criação/edição de poder
   const [powerDialogOpen, setPowerDialogOpen] = useState(false);
   const [editingPowerIndex, setEditingPowerIndex] = useState(null);
-  const [newPower, setNewPower] = useState({
-    name: '',
-    icon: '⚡',
-    baseEffect: '',
-    rank: 1,
-    description: '',
-    extras: [],
-    complications: [],
-    notes: '',
-    totalCost: 0
-  });
+const [newPower, setNewPower] = useState({
+  name: '',
+  icon: '⚡',
+  baseEffect: '',
+  customBaseCost: 1, // ← NOVO
+  rank: 1,
+  description: '',
+  extras: [],
+  complications: [],
+  fixedModifier: 0, // ← NOVO
+  notes: '',
+  totalCost: 0
+});
 
   // Estados para extras e complicações
   const [newExtra, setNewExtra] = useState({ name: '', description: '', costPerRank: 1 });
@@ -64,13 +66,36 @@ const PowersSection = () => {
     setEditingPowerIndex(null);
   };
 
-  const calculatePowerCost = (power) => {
-    const baseRank = power.rank || 1;
-    const extrasCost = power.extras?.reduce((sum, extra) => sum + (extra.costPerRank * baseRank), 0) || 0;
-    const complicationsDiscount = power.complications?.reduce((sum, comp) => sum + Math.abs(comp.pointsPerRank * baseRank), 0) || 0;
-    
-    return Math.max(1, baseRank + extrasCost - complicationsDiscount);
-  };
+const calculatePowerCost = (power) => {
+  if (!power.rank) return 0;
+  
+  // 1. Custo base (editável)
+  let baseCost = power.customBaseCost || 1;
+  
+  // 2. Somar extras
+  let extrasTotal = 0;
+  power.extras?.forEach(extra => {
+    extrasTotal += extra.costPerRank || 1;
+  });
+  
+  // 3. Subtrair complicações
+  let complicationsTotal = 0;
+  power.complications?.forEach(comp => {
+    complicationsTotal += Math.abs(comp.pointsPerRank || 1);
+  });
+  
+  // 4. Fórmula: (custo base + extras - complicações) × graduação
+  let subtotal = baseCost + extrasTotal - complicationsTotal;
+  let totalCost = Math.max(1, subtotal) * power.rank;
+  
+  // 5. Somar modificador fixo
+  if (power.fixedModifier) {
+    totalCost += power.fixedModifier;
+  }
+  
+  return Math.max(0, totalCost);
+};
+
 
   const addExtra = () => {
     if (newExtra.name.trim()) {
@@ -250,6 +275,52 @@ const PowersSection = () => {
                     </div>
                   </div>
 
+                  {/* Custo Base Editável */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="custom-base-cost">
+                        Custo Base (editável) *
+                        <InfoTooltip content="Digite o custo base do efeito conforme a tabela de M&M. Exemplo: Blast = 2, Damage = 2, Protection = 1" />
+                      </Label>
+                      <Input
+                        id="custom-base-cost"
+                        type="number"
+                        min="1"
+                        value={newPower.customBaseCost}
+                        onChange={(e) => setNewPower({...newPower, customBaseCost: parseInt(e.target.value) || 1})}
+                        placeholder="Ex: 2"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="power-rank">
+                        Graduação
+                      </Label>
+                      <Input
+                        id="power-rank"
+                        type="number"
+                        min="1"
+                        value={newPower.rank}
+                        onChange={(e) => setNewPower({...newPower, rank: parseInt(e.target.value) || 1})}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Modificador Fixo */}
+                  <div className="space-y-2">
+                    <Label htmlFor="fixed-modifier">
+                      Modificador Fixo
+                      <InfoTooltip content="Valor que será somado ao custo final após todos os cálculos (opcional)" />
+                    </Label>
+                    <Input
+                      id="fixed-modifier"
+                      type="number"
+                      value={newPower.fixedModifier}
+                      onChange={(e) => setNewPower({...newPower, fixedModifier: parseInt(e.target.value) || 0})}
+                      placeholder="0"
+                    />
+                  </div>
+
                   {/* Descrição */}
                   <div>
                     <Label htmlFor="power-description">Descrição</Label>
@@ -383,14 +454,15 @@ const PowersSection = () => {
                   </div>
 
                   {/* Custo Total */}
-                  <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg">
-                    <div className="text-lg font-semibold text-blue-800 dark:text-blue-200">
+                  <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                    <div className="font-semibold text-blue-900">
                       Custo Total: {calculatePowerCost(newPower)} pontos
                     </div>
-                    <div className="text-sm text-blue-600 dark:text-blue-300 mt-1">
-                      Base: {newPower.rank} • Extras: +{newPower.extras?.reduce((sum, extra) => sum + (extra.costPerRank * newPower.rank), 0) || 0} • Complicações: {newPower.complications?.reduce((sum, comp) => sum + (comp.pointsPerRank * newPower.rank), 0) || 0}
+                    <div className="text-sm text-blue-700 mt-1">
+                      ({newPower.customBaseCost || 1} base + {newPower.extras?.reduce((sum, extra) => sum + (extra.costPerRank || 1), 0) || 0} extras - {newPower.complications?.reduce((sum, comp) => sum + Math.abs(comp.pointsPerRank || 1), 0) || 0} complicações) × {newPower.rank} graduação {newPower.fixedModifier ? `+ ${newPower.fixedModifier} fixo` : ''}
                     </div>
                   </div>
+
 
                   {/* Botões */}
                   <div className="flex gap-2">

@@ -34,6 +34,7 @@ import LoginModal from './components/LoginModal';
 import CharacterManager from './components/CharacterManager';
 import './App.css';
 
+
 function AppContent() {
   const { currentUser, logout } = useAuth();
   const { toggleTheme, isDark } = useTheme();
@@ -41,6 +42,7 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState('basic');
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [characterManagerOpen, setCharacterManagerOpen] = useState(false);
+
 
   const handleLogout = async () => {
     try {
@@ -50,6 +52,7 @@ function AppContent() {
     }
   };
 
+
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       {currentMode === 'session' ? (
@@ -57,18 +60,31 @@ function AppContent() {
           {/* Header do Modo Sessão */}
           <div className="bg-card border-b border-border p-4">
             <div className="max-w-7xl mx-auto flex items-center justify-between">
-              <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                <Play className="w-6 h-6 text-green-600" />
-                Modo Sessão
-              </h1>
-              <Button
-                onClick={() => setCurrentMode('creation')}
-                variant="outline"
-                className="flex items-center gap-2"
+              {/* ✅ MODIFICAÇÃO 1: TÍTULO CLICÁVEL DO MODO SESSÃO */}
+              <a 
+                href="/" 
+                className="text-2xl font-bold text-foreground flex items-center gap-2 hover:text-primary transition-colors cursor-pointer"
+                title="Voltar para a Base de Conhecimento"
               >
-                <Edit className="w-4 h-4" />
-                Editar Ficha
-              </Button>
+                <Play className="w-6 h-6 text-green-600" />
+                Modo Sessão - Mutantes & Malfeitores
+              </a>
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => setCurrentMode('creation')}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <Edit className="w-4 h-4" />
+                  Editar Ficha
+                </Button>
+                <a 
+                  href="/" 
+                  className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-accent"
+                >
+                  ← Base de Conhecimento
+                </a>
+              </div>
             </div>
           </div>
           
@@ -79,9 +95,14 @@ function AppContent() {
           {/* Header do Modo Criação */}
           <div className="bg-card border-b border-border p-4">
             <div className="max-w-7xl mx-auto flex items-center justify-between">
-              <h1 className="text-3xl font-bold text-foreground">
+              {/* ✅ MODIFICAÇÃO 2: TÍTULO CLICÁVEL DO MODO CRIAÇÃO */}
+              <a 
+                href="/" 
+                className="text-3xl font-bold text-foreground hover:text-primary transition-colors cursor-pointer"
+                title="Voltar para a Base de Conhecimento"
+              >
                 Mutantes & Malfeitores - Ficha de Personagem
-              </h1>
+              </a>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
@@ -140,9 +161,18 @@ function AppContent() {
                     </Button>
                   </>
                 )}
+                
+                {/* ✅ MODIFICAÇÃO 3: BOTÃO DE RETORNO NO DESKTOP */}
+                <a 
+                  href="/" 
+                  className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-accent border border-border"
+                >
+                  ← Base de Conhecimento
+                </a>
               </div>
             </div>
           </div>
+
 
           <div className="max-w-7xl mx-auto p-6">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -173,22 +203,27 @@ function AppContent() {
                     </TabsTrigger>
                   </TabsList>
 
+
                   <div className="mt-6">
                     <TabsContent value="basic">
                       <BasicInfoSection />
                     </TabsContent>
 
+
                     <TabsContent value="attributes">
                       <AttributesSection />
                     </TabsContent>
+
 
                     <TabsContent value="defenses">
                       <DefensesSection />
                     </TabsContent>
 
+
                     <TabsContent value="skills">
                       <SkillsSection />
                     </TabsContent>
+
 
                     <TabsContent value="powers">
                       <PowersSection />
@@ -196,6 +231,7 @@ function AppContent() {
                   </div>
                 </Tabs>
               </div>
+
 
               {/* Sidebar - Gráfico de Pontos e Vantagens/Complicações */}
               <div className="space-y-6">
@@ -225,6 +261,7 @@ function AppContent() {
   );
 }
 
+
 function App() {
   return (
     <ThemeProvider>
@@ -236,5 +273,6 @@ function App() {
     </ThemeProvider>
   );
 }
+
 
 export default App;

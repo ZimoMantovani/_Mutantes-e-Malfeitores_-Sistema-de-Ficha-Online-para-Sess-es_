@@ -1,5 +1,4 @@
 // Dados dos poderes do sistema Mutantes & Malfeitores
-
 // Efeitos base dos poderes
 export const BASE_EFFECTS = [
   {
@@ -269,36 +268,49 @@ export const POWER_ICONS = [
   '🎭', '👻', '🦅', '🐺', '🦁', '🐉', '🔱', '⚖️', '🎪', '🎨'
 ];
 
-// Função para calcular custo do poder
+// NOVA FUNÇÃO DE CÁLCULO - Implementa sua metodologia específica
 export const calculatePowerCost = (power) => {
-  if (!power.baseEffect || !power.rank) return 0;
+  if (!power.rank) return 0;
   
-  let baseCost = power.baseEffect.baseCost;
-  let totalCost = baseCost * power.rank;
+  // 1. Custo base (editável pelo usuário via customBaseCost ou baseEffect.baseCost)
+  let baseCost = power.customBaseCost || power.baseEffect?.baseCost || 1;
   
-  // Aplicar extras
+  // 2. Somar valores dos extras
+  let extrasTotal = 0;
   power.extras?.forEach(extra => {
-    const modifier = parseInt(extra.costModifier.replace(/[^-\d]/g, ''));
-    totalCost += modifier * power.rank;
+    const modifier = parseInt(extra.costModifier.replace(/[^\-\d]/g, ''));
+    extrasTotal += modifier;
   });
   
-  // Aplicar complicações
+  // 3. Subtrair valores das complicações
+  let complicationsTotal = 0;
   power.flaws?.forEach(flaw => {
-    const modifier = parseInt(flaw.costModifier.replace(/[^-\d]/g, ''));
-    totalCost += modifier * power.rank;
+    const modifier = parseInt(flaw.costModifier.replace(/[^\-\d]/g, ''));
+    complicationsTotal += Math.abs(modifier); // Garantir que seja positivo para subtrair
   });
+  
+  // 4. Aplicar a fórmula: (custo base + extras - complicações) × graduação
+  let subtotal = baseCost + extrasTotal - complicationsTotal;
+  let totalCost = Math.max(1, subtotal) * power.rank;
+  
+  // 5. Somar modificador fixo (se houver)
+  if (power.fixedModifier) {
+    totalCost += power.fixedModifier;
+  }
   
   return Math.max(0, totalCost);
 };
 
-// Estrutura inicial de um poder
+// NOVA ESTRUTURA INICIAL DE PODER - Com campos editáveis
 export const createInitialPower = () => ({
   name: '',
   description: '',
   baseEffect: null,
+  customBaseCost: 1, // ← NOVO: Campo editável para custo base
   rank: 1,
   extras: [],
   flaws: [],
+  fixedModifier: 0, // ← NOVO: Modificador fixo
   icon: '⚡',
   notes: '',
   cost: 0

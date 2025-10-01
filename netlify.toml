@@ -1,0 +1,41 @@
+[build]
+# Comando para build do React e preparação dos arquivos
+command = "npm run build && mv build/index.html ficha-personagem.html && cp -r build/static ./static && cp -r build/static/* ."
+
+# Pasta de publicação (raiz do projeto)
+publish = "."
+
+[build.environment]
+NODE_VERSION = "18"
+
+# Redirecionamentos para melhor UX
+[[redirects]]
+from = "/ficha"
+to = "/ficha-personagem.html"
+status = 200
+
+# SPA redirects para o sistema React funcionar corretamente
+[[redirects]]
+from = "/ficha-personagem/*"
+to = "/ficha-personagem.html"
+status = 200
+
+# Cache para assets estáticos
+[[headers]]
+for = "/static/js/*"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/static/css/*"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+# Headers de segurança
+[[headers]]
+for = "/*"
+[headers.values]
+X-Frame-Options = "DENY"
+X-XSS-Protection = "1; mode=block"
+X-Content-Type-Options = "nosniff"
+Referrer-Policy = "strict-origin-when-cross-origin"
