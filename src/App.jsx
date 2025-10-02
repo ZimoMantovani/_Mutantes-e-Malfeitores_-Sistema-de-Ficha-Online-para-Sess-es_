@@ -62,7 +62,7 @@ function AppContent() {
             <div className="max-w-7xl mx-auto flex items-center justify-between">
               {/* ✅ MODIFICAÇÃO 1: TÍTULO CLICÁVEL DO MODO SESSÃO */}
               <a 
-                href="/" 
+                href="https://help-mutantes.netlify.app/" 
                 className="text-2xl font-bold text-foreground flex items-center gap-2 hover:text-primary transition-colors cursor-pointer"
                 title="Voltar para a Base de Conhecimento"
               >
@@ -79,7 +79,7 @@ function AppContent() {
                   Editar Ficha
                 </Button>
                 <a 
-                  href="/" 
+                  href="https://help-mutantes.netlify.app/" 
                   className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-accent"
                 >
                   ← Base de Conhecimento
@@ -97,7 +97,7 @@ function AppContent() {
             <div className="max-w-7xl mx-auto flex items-center justify-between">
               {/* ✅ MODIFICAÇÃO 2: TÍTULO CLICÁVEL DO MODO CRIAÇÃO */}
               <a 
-                href="/" 
+                href="https://help-mutantes.netlify.app/" 
                 className="text-3xl font-bold text-foreground hover:text-primary transition-colors cursor-pointer"
                 title="Voltar para a Base de Conhecimento"
               >
@@ -164,7 +164,7 @@ function AppContent() {
                 
                 {/* ✅ MODIFICAÇÃO 3: BOTÃO DE RETORNO NO DESKTOP */}
                 <a 
-                  href="/" 
+                  href="https://help-mutantes.netlify.app/" 
                   className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-accent border border-border"
                 >
                   ← Base de Conhecimento
